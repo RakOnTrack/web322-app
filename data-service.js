@@ -1,19 +1,20 @@
 const fs = require("fs");
 
-var employees = [];
+var posts = [];
+var categories = [];
 
 module.exports.initialize = function () {
   return new Promise((resolve, reject) => {
-    fs.readFile("./data/employees.json", "utf-8", (err, data) => {
+    fs.readFile("./data/posts.json", "utf-8", (err, data) => {
       if (err) {
         reject(err);
       } else {
-        employees = JSON.parse(data);
-        fs.readFile("./data/departments.json", "utf-8", (err, data) => {
+        posts = JSON.parse(data);
+        fs.readFile("./data/categories.json", "utf-8", (err, data) => {
           if (err) {
             reject(err);
           } else {
-            departments = JSON.parse(data);
+            categories = JSON.parse(data);
             resolve();
           }
         });
@@ -22,36 +23,91 @@ module.exports.initialize = function () {
   });
 };
 
-module.exports.getAllEmployees = function () {
+module.exports.getAllPosts = function () {
   return new Promise((resolve, reject) => {
-    if (employees.length == 0) {
+    if (posts.length == 0) {
       reject("Query returned 0 results.");
     }
-    resolve(employees);
+    resolve(posts);
   });
 };
 
-module.exports.getAllDepartments = function () {
+module.exports.getAllCategories = function () {
   return new Promise((resolve, reject) => {
-    if (departments.length == 0) {
+    if (categories.length == 0) {
       reject("Query returned 0 results.");
     }
-    resolve(departments);
+    resolve(categories);
   });
 };
 
-module.exports.getAllManagers = function () {
+module.exports.getAllBlogs = function () {
   return new Promise((resolve, reject) => {
-    var allManagers = [];
-    for (var i = 0; i < employees.length; i++) {
-      if (employees[i].isManager == true) {
-        allManagers.push(employees[i]);
+    var allBlogs = [];
+    for (var i = 0; i < posts.length; i++) {
+      if (posts[i].published == true) {
+        allBlogs.push(posts[i]);
       }
     }
-    if (allManagers.length == 0) {
-      reject("No heros in your list!");
+    if (allBlogs.length == 0) {
+      reject("No blogs in your list!");
     }
 
-    resolve(allManagers);
+    resolve(allBlogs);
+  });
+};
+
+// module.exports.addPost = function (postData) {
+//   return new Promise(function (resolve, reject) {
+//     // postData.id = posts.length + 1;
+
+//     // postData.body =
+//     // postData.title =
+//     // postData.postDate =
+//     // postData.category =
+//     // postData.featureImage =
+//     // postData.published =
+
+//     // characterData.isHero = characterData.isHero ? true : false;
+//     // characterData.charid = characters.length + 1;
+//     posts.push(postData);
+//     resolve();
+//   });
+// };
+
+// module.exports.getPostById = function (id) {
+//   return new Promise((resolve, reject) => {
+//     let foundPost = posts.find((post) => post.id == id);
+
+//     if (foundPost) {
+//       resolve(foundPost);
+//     } else {
+//       reject("no result returned");
+//     }
+//   });
+// };
+
+module.exports.getPostById = function(id){
+  return new Promise((resolve,reject)=>{
+      let foundPost = posts.find(post => post.id == id);
+      foundPost ? resolve(foundPost) : reject("no result returned");
+  });
+}
+
+
+
+module.exports.addPost = function (postData) {
+  return new Promise((resolve, reject) => {
+    postData.body = postData.body;
+    postData.title = postData.title;
+    postData.postDate = postData.postDate;
+    postData.category = postData.category;
+    postData.featureImage = postData.featureImage;
+    postData.published = postData.published;
+
+    postData.published = postData.published ? true : false;
+    postData.id = posts.length + 1;
+    posts.push(postData);
+    resolve();
   });
 };
